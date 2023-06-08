@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { BoardOperationsContext } from './index';
 
 const useBoardOperations = () => {
-  return useContext(BoardOperationsContext);
+	return useContext(BoardOperationsContext);
 };
 
 export { useBoardOperations };

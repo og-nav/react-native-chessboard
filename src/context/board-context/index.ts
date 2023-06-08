@@ -1,20 +1,14 @@
-import type { ChessInstance, PieceType } from 'chess.js';
 import React, { createContext } from 'react';
-import type { Player } from '../../types';
+import type { Chess, Color, PieceSymbol, Square } from '../../chess';
 
-const BoardContext = createContext<ReturnType<ChessInstance['board']>>(
-  {} as any
-);
+const BoardContext = createContext<ReturnType<Chess['board']>>({} as any);
 
 const BoardSetterContext = createContext<
-  React.Dispatch<
-    React.SetStateAction<
-      ({
-        type: PieceType;
-        color: Player;
-      } | null)[][]
-    >
-  >
+	React.Dispatch<
+		React.SetStateAction<
+			({ square: Square; type: PieceSymbol; color: Color } | null)[][]
+		>
+	>
 >({} as any);
 
 export { BoardContext, BoardSetterContext };

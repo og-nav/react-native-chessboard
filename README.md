@@ -132,14 +132,17 @@ const App = () => (
 ```
 
 In detail, you can access these parameters: 
-- `in_check: boolean`
-- `in_checkmate: boolean`
-- `in_draw: boolean`
-- `in_stalemate: boolean`
-- `in_threefold_repetition: boolean`
-- `insufficient_material: boolean`
-- `game_over: boolean`
+- `isCheck: boolean`
+- `isCheckmate: boolean`
+- `isDraw: boolean`
+- `isStalemate: boolean`
+- `isThreefoldRepetition: boolean`
+- `isInsufficientMaterial: boolean`
+- `isGameOver: boolean`
 - `fen: boolean`
+- `history: Move[] (verbose = true by default)`
+- `getCastlingRights(color: Color): { k: boolean, q: boolean }`
+- `moves: Move[] (legal, playable moves)`
 
 P.S: These parameters are the outputs given by the respective functions used by chess.js (on which the package is built).
 
@@ -164,6 +167,33 @@ Useful if you want to customise the default durations used in the chessboard (in
 
 Default: 
 - move: `150`
+
+---
+
+### `soundEnabled?: boolean`
+
+Useful if you want sound whenever moving pieces. 
+
+Default: 
+- soundEnabled: `true`
+
+---
+
+### `hapticsEnabled?: boolean`
+
+Useful if you want vibrations when moving pieces. 
+
+Default: 
+- hapticsEnabled: `true`
+
+---
+
+### `blindfold?: boolean`
+
+Useful for playing without seeing the pieces on the board. 
+
+Default: 
+- blindfold: `false`
 
 ---
 

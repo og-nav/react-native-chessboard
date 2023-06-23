@@ -24,7 +24,7 @@ const Chessboard: React.FC = React.memo(() => {
 	const { boardSize } = useChessboardProps();
 
 	return (
-		<View style={[styles.container, { width: boardSize }]}>
+		<View style={[styles.container, { width: boardSize, }]}>
 			<Background />
 			<Pieces />
 			<HighlightedSquares />

@@ -20,6 +20,8 @@ const PromotionDialog: React.FC<Required<BoardPromotionContextState>> =
 				style={[
 					{
 						width: boardSize / 3,
+						left: boardSize / 3,
+						top: boardSize / 3,
 					},
 					styles.container,
 				]}
@@ -56,8 +58,8 @@ const styles = StyleSheet.create({
 			width: 0,
 		},
 		flexWrap: 'wrap',
-		left: 141,
-		top: 282
+		//left: 141,
+		//top: 282
 	},
 });
 

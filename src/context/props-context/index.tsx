@@ -32,8 +32,8 @@ type ChessboardProps = {
 	onMove?: (info: ChessMoveInfo) => void;
 	colors?: ChessboardColorsType;
 	durations?: ChessboardDurationsType;
-	//audio?: boolean;
-	//haptics?: boolean;
+	soundEnabled?: boolean;
+	hapticsEnabled?: boolean;
 	blindfold?: boolean;
 	children?: React.ReactNode;
 };
@@ -69,8 +69,8 @@ const defaultChessboardProps: ChessboardContextType = {
 	withNumbers: true,
 	boardSize: DEFAULT_BOARD_SIZE,
 	pieceSize: DEFAULT_BOARD_SIZE / 8,
-	//audio: true,
-	///haptics: true,
+	soundEnabled: true,
+	hapticsEnabled: true,
 	blindfold: false,
 };
 

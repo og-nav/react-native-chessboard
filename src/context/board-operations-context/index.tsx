@@ -19,6 +19,7 @@ import type { ChessboardRef } from '../board-refs-context';
 import { usePieceRefs } from '../board-refs-context/hooks';
 import { useChessEngine } from '../chess-engine-context/hooks';
 import { useChessboardProps } from '../props-context/hooks';
+const _ = require('lodash');
 
 type BoardOperationsContextType = {
 	selectableSquares: Animated.SharedValue<Square[]>;
@@ -48,6 +49,8 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 		pieceSize,
 		onMove: onChessboardMoveCallback,
 		colors: { checkmateHighlight },
+		soundEnabled,
+		hapticsEnabled,
 	} = useChessboardProps();
 	const { toTranslation } = useReversePiecePosition();
 	const selectableSquares = useSharedValue<Square[]>([]);
@@ -59,11 +62,20 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 	// AUDIO //
 	////////////////////
 	const [sound, setSound] = useState<Audio.Sound | null>(null);
-	async function playSound() {
-		await Audio.setAudioModeAsync({ playsInSilentModeIOS: true});
+	async function playSound(
+		soundType: 'move' | 'check' | 'capture' | 'checkmate'
+	) {
+		const allSounds = {
+			move: require('../../assets/sound/move.mp3'),
+			check: require('../../assets/sound/move.mp3'),
+			capture: require('../../assets/sound/capture.mp3'),
+			checkmate: require('../../assets/sound/checkmate.mp3'),
+		};
+
+		await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 		const { sound } = await Audio.Sound.createAsync(
-			require('../../../../assets/sound/Move.mp3')
-		)
+			allSounds[soundType as keyof typeof allSounds]
+		);
 		setSound(sound);
 		await sound.playAsync();
 	}
@@ -71,10 +83,10 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 	useEffect(() => {
 		return sound
 			? () => {
-				sound.unloadAsync();
-			}
+					sound.unloadAsync();
+			  }
 			: undefined;
-	}, [sound])
+	}, [sound]);
 	////////////////////
 	// AUDIO //
 	////////////////////
@@ -82,9 +94,10 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 	////////////////////
 	// HAPTICS //
 	////////////////////
-	function moveHaptics() {
-		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-	}
+
+	const moveHaptics = useCallback(() => {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+	}, []);
 
 	////////////////////
 	// HAPTICS //
@@ -159,8 +172,24 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 
 			if (move == null) return;
 
-			playSound();
-			moveHaptics();
+			if (soundEnabled) {
+				const gameCopy = _.cloneDeep(chess);
+				gameCopy.undo();
+				const squarePiece = gameCopy.get(to);
+				if (squarePiece) {
+					playSound('capture');
+				} else if (chess.isCheck()) {
+					playSound('check');
+				} else {
+					playSound('move');
+				}
+				if (chess.isCheckmate()) {
+					playSound('checkmate');
+				}
+			}
+			if (hapticsEnabled) {
+				moveHaptics();
+			}
 
 			const isCheckmate = chess.isCheckmate();
 
@@ -199,8 +228,6 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 			controller?.resetAllHighlightedSquares();
 			controller?.highlight({ square: lastMove.from });
 			controller?.highlight({ square: lastMove.to });
-			playSound();
-			moveHaptics();
 
 			const in_promotion = isPromoting(from, to);
 			if (!in_promotion) {
@@ -240,10 +267,28 @@ const BoardOperationsContextProviderComponent = React.forwardRef<
 			// eslint-disable-next-line no-shadow
 			selectableSquares.value = validSquares.map((square) => {
 				const splittedSquare = square.split('x');
-				if (splittedSquare.length === 0) {
-					return square;
+				if (splittedSquare.length === 1) {
+					// either no capture or is castling
+					if (square === ('O-O' as Square)) {
+						const currentTurn = chess.turn();
+						if (currentTurn === 'w') {
+							return 'g1' as Square;
+						} else {
+							return 'g8' as Square;
+						}
+					} else if (square === ('O-O-O' as Square)) {
+						const currentTurn = chess.turn();
+						if (currentTurn === 'w') {
+							return 'c1' as Square;
+						} else {
+							return 'c8' as Square;
+						}
+					} else {
+						return square;
+					}
 				}
 
+				// second half capture like in Nxe4 -> just e4
 				return splittedSquare[splittedSquare.length - 1] as Square;
 			});
 		},

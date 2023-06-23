@@ -13,6 +13,7 @@ import type { ChessPieceRef } from '../../types';
 import type { HighlightedSquareRefType } from '../../components/highlighted-squares/highlighted-square';
 import { useChessEngine } from '../chess-engine-context/hooks';
 import { useSetBoard } from '../board-context/hooks';
+const _ = require('lodash');
 
 const PieceRefsContext = createContext<React.MutableRefObject<Record<
 	Square,

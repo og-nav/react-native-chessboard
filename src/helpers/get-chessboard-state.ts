@@ -1,4 +1,4 @@
-import { Chess } from '../chess';
+import { Chess, Color, Move } from '../chess';
 
 type ChessboardStateFunctions = Pick<
 	Chess,
@@ -10,6 +10,9 @@ type ChessboardStateFunctions = Pick<
 	| 'isInsufficientMaterial'
 	| 'isGameOver'
 	| 'fen'
+	| 'history'
+	| 'getCastlingRights'
+	| 'moves'
 >;
 
 type RecordReturnTypes<T> = {
@@ -28,5 +31,10 @@ export const getChessboardState = (chess: Chess): ChessboardState => {
 		isInsufficientMaterial: chess.isInsufficientMaterial(),
 		isGameOver: chess.isGameOver(),
 		fen: chess.fen(),
+		history: chess.history({ verbose: true }),
+		getCastlingRights: (color: Color) => {
+			return chess.getCastlingRights(color);
+		},
+		moves: chess.moves() as unknown as Move[],
 	};
 };
